@@ -7,8 +7,9 @@ output:
     theme: cerulean
 ---
 
-## Contact
+<img src="images/Martinez-Sarahy.jpg" style="width:60%">
 
+## Contact
 
 * [Github](https://github.com/sarahym7)
 * [LinkedIn](https://www.linkedin.com/in/sarahy-martinez/)
