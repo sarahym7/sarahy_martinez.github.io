@@ -13,4 +13,4 @@ navbar:
       href: https://www.linkedin.com/in/sarahy-martinez/
 output:
   html_document:
-    theme: cerulean
+    theme: journal
