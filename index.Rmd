@@ -9,10 +9,4 @@ output:
 <img src="images/Martinez-Sarahy.jpg" style="width:60%">
 
 ## About Me
-[About Me](aboutme.html)
 
-## Contact
-
-* [Github](https://github.com/sarahym7)
-* [LinkedIn](https://www.linkedin.com/in/sarahy-martinez/)
-* [Email](mailto:sjm2284@cumc.columbia.edu)
