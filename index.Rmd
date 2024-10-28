@@ -1,5 +1,5 @@
 ---
-title: " Sarahy Matinez"
+title: " Sarahy Martinez"
 output: 
   html_document:
     toc: true
@@ -7,6 +7,4 @@ output:
     theme: cerulean
 ---
 
-# This is Jeff's awesome website
-
-![](https://media.giphy.com/media/drXGoW1iudhKw/giphy.gif)
+# Sarahy Martinez
