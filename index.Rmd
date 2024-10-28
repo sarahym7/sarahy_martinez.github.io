@@ -7,12 +7,7 @@ output:
     theme: cerulean
 ---
 
-# Sarahy Martinez
-
-
-
-
-## Contact 
+## Contact
 
 
 * [Github](https://github.com/sarahym7)
