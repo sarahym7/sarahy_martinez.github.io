@@ -9,6 +9,9 @@ output:
 
 <img src="images/Martinez-Sarahy.jpg" style="width:60%">
 
+## About Me
+[About Me](aboutme.html)
+
 ## Contact
 
 * [Github](https://github.com/sarahym7)
