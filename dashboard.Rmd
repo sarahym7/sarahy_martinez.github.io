@@ -1,16 +1,14 @@
 ---
-title: " Problem 2"
+title: "Dashboard"
 output: 
-  html_document:
-    toc: true
-    toc_float: true
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+    source: embed
 ---
 
-
-Using the NYC restaurant inspection data 
-
-
-```{r}
+```{r setup, include=FALSE}
+library(flexdashboard)
 library(tidyverse)
 library(httr)
 library(jsonlite)
@@ -50,13 +48,47 @@ url = "https://data.cityofnewyork.us/resource/43nn-pn8j.json"
 
 nyc_inspections = 
   get_all_inspections(url) %>%
-  bind_rows() 
+  bind_rows() %>% 
+  drop_na()
+```
+
+
+```{r}
+nyc_inspections %>%
+  janitor::clean_names() %>% 
+  select(camis, boro, zipcode, cuisine_description, violation_code, score, grade, inspection_type, latitude, longitude, grade_date)
 
 ```
 
 
 
+
+Column {data-width=650}
+-----------------------------------------------------------------------
+
+### Chart A
+
 ```{r}
-nyc_inspections
+nyc_inspections %>% 
+  count(grade, boro) %>% 
+  mutate(grade = fct_reorder(grade, n)) %>% 
+  plot_ly( x = ~ boro ,y = ~n, color= ~grade, type = "bar")
+    
+   
+```
+
+Column {data-width=350}
+-----------------------------------------------------------------------
+
+### Chart B
+
+```{r}
+
+```
+
+### Chart C
+
+```{r}
+
 ```
 
