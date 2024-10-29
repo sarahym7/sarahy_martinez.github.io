@@ -35,6 +35,14 @@
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<script src="site_libs/plotly-binding-4.10.4/plotly.js"></script>
+<script src="site_libs/typedarray-0.1/typedarray.min.js"></script>
+<link href="site_libs/crosstalk-1.2.1/css/crosstalk.min.css" rel="stylesheet" />
+<script src="site_libs/crosstalk-1.2.1/js/crosstalk.min.js"></script>
+<link href="site_libs/plotly-htmlwidgets-css-2.11.1/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="site_libs/plotly-main-2.11.1/plotly-latest.min.js"></script>
 <link href="site_libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet" />
 
@@ -345,7 +353,7 @@ div.tocify {
   </a>
 </li>
 <li>
-  <a href="plotly.html">Data Science Problem 2</a>
+  <a href="dashboard.html">Dashboard</a>
 </li>
       </ul>
     </div><!--/.nav-collapse -->
@@ -361,9 +369,80 @@ div.tocify {
 </div>
 
 
-<div id="homework-question-2" class="section level1">
-<h1>Homework Question 2</h1>
-</div>
+<p>Using the NYC restaurant inspection data</p>
+<pre class="r"><code>library(tidyverse)
+library(httr)
+library(jsonlite)
+library(plotly)
+
+get_all_inspections = function(url) {
+  
+  all_inspections = vector(&quot;list&quot;, length = 0)
+  
+  loop_index = 1
+  chunk_size = 50000
+  DO_NEXT = TRUE
+  
+  while (DO_NEXT) {
+    message(&quot;Getting data, page &quot;, loop_index)
+    
+    all_inspections[[loop_index]] = 
+      GET(url,
+          query = list(`$order` = &quot;zipcode&quot;,
+                       `$limit` = chunk_size,
+                       `$offset` = as.integer((loop_index - 1) * chunk_size)
+                       )
+          ) %&gt;%
+      content(&quot;text&quot;) %&gt;%
+      fromJSON() %&gt;%
+      as_tibble()
+    
+    DO_NEXT = dim(all_inspections[[loop_index]])[1] == chunk_size
+    loop_index = loop_index + 1
+  }
+  
+  all_inspections
+  
+}
+
+url = &quot;https://data.cityofnewyork.us/resource/43nn-pn8j.json&quot;
+
+nyc_inspections = 
+  get_all_inspections(url) %&gt;%
+  bind_rows() %&gt;% 
+  drop_na()</code></pre>
+<pre><code>## Getting data, page 1</code></pre>
+<pre><code>## Getting data, page 2</code></pre>
+<pre><code>## Getting data, page 3</code></pre>
+<pre><code>## Getting data, page 4</code></pre>
+<pre><code>## Getting data, page 5</code></pre>
+<pre><code>## Getting data, page 6</code></pre>
+<p>``</p>
+<pre class="r"><code>nyc_inspections %&gt;%
+  janitor::clean_names() %&gt;% 
+  select(camis, boro, zipcode, cuisine_description, violation_code, score, grade, inspection_type, latitude, longitude, grade_date)</code></pre>
+<pre><code>## # A tibble: 111,107 × 11
+##    camis    boro      zipcode cuisine_description     violation_code score grade
+##    &lt;chr&gt;    &lt;chr&gt;     &lt;chr&gt;   &lt;chr&gt;                   &lt;chr&gt;          &lt;chr&gt; &lt;chr&gt;
+##  1 50132187 Manhattan 10000   Sandwiches/Salads/Mixe… 10F            13    A    
+##  2 50132187 Manhattan 10000   Sandwiches/Salads/Mixe… 04K            13    A    
+##  3 50132187 Manhattan 10000   Sandwiches/Salads/Mixe… 10B            13    A    
+##  4 50132187 Manhattan 10000   Sandwiches/Salads/Mixe… 06D            8     A    
+##  5 50132187 Manhattan 10000   Sandwiches/Salads/Mixe… 08A            13    A    
+##  6 50132187 Manhattan 10000   Sandwiches/Salads/Mixe… 04L            13    A    
+##  7 50147715 Manhattan 10000   French                  08B            19    Z    
+##  8 50132187 Manhattan 10000   Sandwiches/Salads/Mixe… 10F            8     A    
+##  9 50147715 Manhattan 10000   French                  04N            19    Z    
+## 10 50147715 Manhattan 10000   French                  08A            19    Z    
+## # ℹ 111,097 more rows
+## # ℹ 4 more variables: inspection_type &lt;chr&gt;, latitude &lt;chr&gt;, longitude &lt;chr&gt;,
+## #   grade_date &lt;chr&gt;</code></pre>
+<pre class="r"><code>nyc_inspections %&gt;% 
+  count(grade, boro) %&gt;% 
+  mutate(grade = fct_reorder(grade, n)) %&gt;% 
+  plot_ly( x = ~ boro ,y = ~n, color= ~grade, type = &quot;bar&quot;)</code></pre>
+<div class="plotly html-widget html-fill-item" id="htmlwidget-40e9ea77c776f0655c70" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-40e9ea77c776f0655c70">{"x":{"visdat":{"935867f95596":["function () ","plotlyVisDat"]},"cur_data":"935867f95596","attrs":{"935867f95596":{"x":{},"y":{},"color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"xaxis":{"domain":[0,1],"automargin":true,"title":"boro","type":"category","categoryorder":"array","categoryarray":["Bronx","Brooklyn","Manhattan","Queens","Staten Island"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"n"},"hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":["Brooklyn","Manhattan","Queens"],"y":[6,2,10],"type":"bar","name":"N","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Bronx","Brooklyn","Manhattan","Queens","Staten Island"],"y":[61,199,196,169,17],"type":"bar","name":"P","marker":{"color":"rgba(252,141,98,1)","line":{"color":"rgba(252,141,98,1)"}},"textfont":{"color":"rgba(252,141,98,1)"},"error_y":{"color":"rgba(252,141,98,1)"},"error_x":{"color":"rgba(252,141,98,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Bronx","Brooklyn","Manhattan","Queens","Staten Island"],"y":[455,1184,1467,1086,101],"type":"bar","name":"Z","marker":{"color":"rgba(141,160,203,1)","line":{"color":"rgba(141,160,203,1)"}},"textfont":{"color":"rgba(141,160,203,1)"},"error_y":{"color":"rgba(141,160,203,1)"},"error_x":{"color":"rgba(141,160,203,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Bronx","Brooklyn","Manhattan","Queens","Staten Island"],"y":[689,2435,3067,2422,203],"type":"bar","name":"C","marker":{"color":"rgba(231,138,195,1)","line":{"color":"rgba(231,138,195,1)"}},"textfont":{"color":"rgba(231,138,195,1)"},"error_y":{"color":"rgba(231,138,195,1)"},"error_x":{"color":"rgba(231,138,195,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Bronx","Brooklyn","Manhattan","Queens","Staten Island"],"y":[1553,3761,4826,3551,538],"type":"bar","name":"B","marker":{"color":"rgba(166,216,84,1)","line":{"color":"rgba(166,216,84,1)"}},"textfont":{"color":"rgba(166,216,84,1)"},"error_y":{"color":"rgba(166,216,84,1)"},"error_x":{"color":"rgba(166,216,84,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Bronx","Brooklyn","Manhattan","Queens","Staten Island"],"y":[7101,22310,31425,18706,3567],"type":"bar","name":"A","marker":{"color":"rgba(255,217,47,1)","line":{"color":"rgba(255,217,47,1)"}},"textfont":{"color":"rgba(255,217,47,1)"},"error_y":{"color":"rgba(255,217,47,1)"},"error_x":{"color":"rgba(255,217,47,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 
 
 

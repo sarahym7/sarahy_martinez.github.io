@@ -7,7 +7,7 @@ output:
     source: embed
 ---
 
-```{r setup, include=FALSE}
+```{r setup,message = FALSE,include=FALSE}
 library(flexdashboard)
 library(tidyverse)
 library(httr)
@@ -53,15 +53,6 @@ nyc_inspections =
 ```
 
 
-```{r}
-nyc_inspections %>%
-  janitor::clean_names() %>% 
-  select(camis, boro, zipcode, cuisine_description, violation_code, score, grade, inspection_type, latitude, longitude, grade_date)
-
-```
-
-
-
 
 Column {data-width=650}
 -----------------------------------------------------------------------
@@ -83,12 +74,22 @@ Column {data-width=350}
 ### Chart B
 
 ```{r}
+nyc_inspections %>% 
+  count(grade, boro) %>% 
+  mutate(grade = fct_reorder(grade, n)) %>% 
+  plot_ly( x = ~ boro ,y = ~n, color= ~grade, type = "bar")
+
 
 ```
 
 ### Chart C
 
 ```{r}
+nyc_inspections %>% 
+  count(grade, boro) %>% 
+  mutate(grade = fct_reorder(grade, n)) %>% 
+  plot_ly( x = ~ boro ,y = ~n, color= ~grade, type = "bar")
+
 
 ```
 

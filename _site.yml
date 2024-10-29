@@ -11,8 +11,8 @@ navbar:
       href: http://github.com/sarahym7/
     - icon: fa-solid fa-globe
       href: https://www.linkedin.com/in/sarahy-martinez/
-    - text: Data Science Problem 2
-      href: plotly.html
+    - text: "Dashboard"
+      href: dashboard.html
 output:
   html_document:
     theme: journal
