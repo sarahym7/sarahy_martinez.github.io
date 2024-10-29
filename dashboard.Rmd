@@ -73,7 +73,10 @@ grade_boro = nyc_inspections %>%
 grade_boro %>% 
   count(grade, boro) %>% 
   mutate(grade = fct_reorder(grade, n)) %>% 
-  plot_ly( x = ~ boro ,y = ~n, color= ~grade, type = "bar")
+  plot_ly( x = ~ boro ,y = ~n, color= ~grade, type = "bar") %>% 
+    layout(title = "Inspection Grades by Borough",
+         xaxis = list(title = "Borough"), 
+         yaxis = list(title = "Count of Inspection Grade"))
     
    
 ```
@@ -101,10 +104,29 @@ nyc_inspections %>%
 ### Chart C
 
 ```{r}
-nyc_inspections %>% 
-  count(grade, boro) %>% 
-  mutate(grade = fct_reorder(grade, n)) %>% 
-  plot_ly( x = ~ boro ,y = ~n, color= ~grade, type = "bar")
+
+inspections_over_time = nyc_inspections %>% 
+   mutate(score = as.numeric(score)) %>% 
+  separate(grade_date, into = c("year", "month", "day"), sep = "-") %>%
+  select(year,score, month ) %>% 
+  filter(year == "2023") %>%
+  group_by(month) %>% 
+  summarise(avg_score = mean(score, na.rm = TRUE))
+
+
+scatter_ggplot = 
+  inspections_over_time %>% 
+ggplot(aes(x = month, y = avg_score, group = 1))+
+  geom_point(color = "black", alpha = 1) +
+  geom_line(color = "purple") +
+  labs(title = "Average Inspection Scores Across all of NYC by Month in 2023"
+       , x = "Month",
+       y = "Average Score") +
+  theme_minimal()
+ 
+
+ggplotly(scatter_ggplot)
+
 
 
 ```
