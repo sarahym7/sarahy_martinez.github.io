@@ -59,19 +59,43 @@ nyc_inspections =
 
 
 ```{r}
-nyc_inspections %>%
-  janitor::clean_names() %>% 
-  select(camis, boro, zipcode, cuisine_description, violation_code, score, grade, inspection_type, latitude, longitude, grade_date)
+grade_boro = nyc_inspections %>% 
+  mutate(grade = recode(grade,  
+                              "A" = " Grade A ",
+                              "B" = " Grade B",
+                              "C" = " Grade C",
+                              "Z" = " Grade Pending",
+                              "P" = " Grade Pending Issued on re-opening",
+                              "N"  = "Not Yet Graded")) 
 
 
-
-
-
-nyc_inspections %>% 
+grade_boro %>% 
   count(grade, boro) %>% 
   mutate(grade = fct_reorder(grade, n)) %>% 
   plot_ly( x = ~ boro ,y = ~n, color= ~grade, type = "bar")
 
 
 ```
+
+
+
+
+```{r}
+inspection_scores_boro = nyc_inspections %>% 
+  mutate(score = as.numeric(score)) %>% 
+    select(boro, score ) %>% 
+  group_by(boro) 
+
+nyc_inspections %>% 
+  mutate(boro = fct_reorder(boro, score))%>%
+  plot_ly(x = ~boro, y = ~score, color = ~boro, type = "box", colors = "viridis") %>% 
+  layout(title = "Inspection Scores by Borough",
+         xaxis = list(title = "Borough"), 
+         yaxis = list(title = "Inspection Score"))
+
+
+
+```
+
+
 
