@@ -13,3 +13,4 @@ output:
 Hi! My name is Sarahy Martinez (pronounced as Sad-uh-ee) and I graduated from UC San Diego with with a major in Public Health concentration in Epidemiology. I am currently a 2nd year Masters in Public student at Columbia Mailman studying Epidemiology with a concentration in Biostatistics and Public Health Data Science. If you'd like to know more about my work experience and research feel free to click the link below. Thank you! 
 
 * [Research and Work Experience](aboutme.html)
+* [Github Repositories](https://github.com/sarahym7/sarahy_martinez.github.io)
